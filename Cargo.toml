@@ -1,6 +1,9 @@
 [package]
+#项目的名称
 name = "iced"
 description = "A cross-platform GUI library inspired by Elm"
+#一个工作区可以有多个包(crate), 每个包都有自己的Cargo.toml文件, 其中会有一个version字段来指定包的版本, 如果没有特殊设置, 工作区的每个包都有不同的版本号
+#该配置的作用是, 工作区内的所有包都共享根目录中Cargo.toml中指定的版本号, 而无需单独为每个包设置版本号. 共享的信息在[workspace.package]区域设置
 version.workspace = true
 edition.workspace = true
 authors.workspace = true
@@ -11,6 +14,8 @@ categories.workspace = true
 keywords.workspace = true
 rust-version.workspace = true
 
+#lints是rust编译器rustc或工具链clippy用来检查代码风格,潜在错误或不推荐用法的规则
+#workspace=true意味着工作区中所有包都启用和使用相同的lint设置, 具体规则设置在[workspace.lints.rust]和[workspace.lints.clippy]区域
 [lints]
 workspace = true
 
@@ -101,6 +106,7 @@ opt-level = 3
 overflow-checks = false
 strip = "debuginfo"
 
+#工作区: 允许在一个项目中管理多个包(crate)
 [workspace]
 members = [
     "core",
@@ -113,9 +119,10 @@ members = [
     "wgpu",
     "widget",
     "winit",
-    "examples/*",
+    "examples/*", #通配符, 匹配example下的所有子目录, 将其视为工作区成员
 ]
 
+#定义所有包的共享信息
 [workspace.package]
 version = "0.13.5"
 authors = ["Héctor Ramón Jiménez <hector@hecrj.dev>"]
