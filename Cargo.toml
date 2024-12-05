@@ -4,6 +4,7 @@ name = "iced"
 description = "A cross-platform GUI library inspired by Elm"
 #一个工作区可以有多个包(crate), 每个包都有自己的Cargo.toml文件, 其中会有一个version字段来指定包的版本, 如果没有特殊设置, 工作区的每个包都有不同的版本号
 #该配置的作用是, 工作区内的所有包都共享根目录中Cargo.toml中指定的版本号, 而无需单独为每个包设置版本号. 共享的信息在[workspace.package]区域设置
+#后面所有带有.workspace结尾的配置都表示要共享[workspace.package]区域的对应设置
 version.workspace = true
 edition.workspace = true
 authors.workspace = true
@@ -19,18 +20,29 @@ rust-version.workspace = true
 [lints]
 workspace = true
 
+#该区域配置docs.rs文档生成的元数据, 简单来说就是定制文档的生成
+#docs.rs是一个用于Rust库的在线文档托管平台, 当你发布一个Rust库到crates.io时, docs.rs会自动从该库源代码中提取文档并生成可以浏览的HTML
+#文档是通过rustdoc工具生成的
 [package.metadata.docs.rs]
+#指定传递给rustdoc的额外参数, --cfg docsrs表示向编译器添加一个自定义的条件编译标志docsrs, 作用可能是: 某些代码仅在文档生成时有效, 在运行时不会编译
 rustdoc-args = ["--cfg", "docsrs"]
+#该配置表示在文档生成时启动项目的所有特性(features), Cargo会根据不同的features做出不同的行为或包括不同的依赖项. Cargo.toml文件有个features区域会定义这些功能
+#默认情况下, docs.rs只会启用项目[features]区域中的default指定的特性并生成文档
 all-features = true
 
+#该区域的配置是为了给项目在crate页面(crates.io)上展示额外信息, 即标签. 通常是维护状态,构建状态,测试覆盖率等
 [badges]
+#该标签表示项目的维护状态, status是该标签的属性, 指定项目当前维护状态, 这里的actively-developed表示正在积极开发中
 maintenance = { status = "actively-developed" }
 
+#该区域定义项目的特性, 可以在Cargo中对它们进行自由的启用和禁用, 通常会影响可选依赖和条件编译
 [features]
+#default表示当没有显式指定特性时, 启用的默认特性
+#wgpu: GPU加速渲染  tiny-skia: 软件渲染  fira-sans: 启用Fira Sans字体  auto-detect-theme: 自动检测主题
 default = ["wgpu", "tiny-skia", "fira-sans", "auto-detect-theme"]
-# Enable the `wgpu` GPU-accelerated renderer backend
+#定义wgpu功能所启用的具体依赖, 该功能会使iced_rederer和iced_widget库中的wgpu模块生效, 即启用GPU渲染
 wgpu = ["iced_renderer/wgpu", "iced_widget/wgpu"]
-# Enable the `tiny-skia` software renderer backend
+#启用tiny-skia软件渲染后端
 tiny-skia = ["iced_renderer/tiny-skia"]
 # Enables the `Image` widget
 image = ["image-without-codecs", "image/default"]
