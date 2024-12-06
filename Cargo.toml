@@ -40,58 +40,65 @@ maintenance = { status = "actively-developed" }
 #default表示当没有显式指定特性时, 启用的默认特性
 #wgpu: GPU加速渲染  tiny-skia: 软件渲染  fira-sans: 启用Fira Sans字体  auto-detect-theme: 自动检测主题
 default = ["wgpu", "tiny-skia", "fira-sans", "auto-detect-theme"]
-#定义wgpu功能所启用的具体依赖, 该功能会使iced_rederer和iced_widget库中的wgpu模块生效, 即启用GPU渲染
+#定义wgpu功能所启用的具体依赖, 该功能会使iced_rederer和iced_widget包中的wgpu模块生效, 即启用GPU渲染
+#iced_renderer/wgpu这种写法中, iced_renderer是一个crate名, 在当前项目的renderer目录下, 而wgpu是该crate的一个特性
 wgpu = ["iced_renderer/wgpu", "iced_widget/wgpu"]
-#启用tiny-skia软件渲染后端
+#启用tiny-skia软件渲染后端, 不依赖GPU, 而是使用CPU进行渲染, 适用于不需要高性能渲染的场景
 tiny-skia = ["iced_renderer/tiny-skia"]
-# Enables the `Image` widget
+#启用Image部件, 该功能依赖两个子特性image-without-codecs和image/default
+#image-without-codecs启用了image控件, 只提供基础图像功能, 例如显示图像, 但没有内建的图像解码器, 需要用户自己提供实现
+#image/default特性启用了image crate的默认功能. 而image crate提供了图像编解码功能. image是该项目的依赖包
 image = ["image-without-codecs", "image/default"]
-# Enables the `Image` widget, without any built-in codecs of the `image` crate
+#dep:image是一种命名依赖的写法, 指代在Cargo.toml中定义的image crate依赖
 image-without-codecs = ["iced_widget/image", "dep:image"]
-# Enables the `Svg` widget
+#支持svg格式图像显示
 svg = ["iced_widget/svg"]
-# Enables the `Canvas` widget
+#支持绘制自定义组件
 canvas = ["iced_widget/canvas"]
-# Enables the `QRCode` widget
+#支持生成二维码
 qr_code = ["iced_widget/qr_code"]
-# Enables the `markdown` widget
+#支持显式markdown
 markdown = ["iced_widget/markdown"]
-# Enables lazy widgets
+#支持延迟加载控件
 lazy = ["iced_widget/lazy"]
-# Enables a debug view in native platforms (press F12)
+#按F12在本地启动一个调试视图
 debug = ["iced_winit/debug"]
-# Enables `tokio` as the `executor::Default` on native platforms
+#启用tokio作为异步执行器
 tokio = ["iced_futures/tokio"]
-# Enables `async-std` as the `executor::Default` on native platforms
+#启用async-std作为异步执行器
 async-std = ["iced_futures/async-std"]
-# Enables `smol` as the `executor::Default` on native platforms
+#启用smol作为异步执行器
 smol = ["iced_futures/smol"]
-# Enables querying system information
+#启用查询系统信息的功能, 例如: 操作系统平台, 分辨率等
 system = ["iced_winit/system"]
-# Enables broken "sRGB linear" blending to reproduce color management of the Web
+#启用 broken "sRGB linear" blending 来模拟 Web 中的颜色管理。
 web-colors = ["iced_renderer/web-colors"]
-# Enables the WebGL backend, replacing WebGPU
+#启用 WebGL 后端，替代 WebGPU 后端。使得 Iced 可以在 Web 环境中使用 WebGL 进行渲染
 webgl = ["iced_renderer/webgl"]
-# Enables the syntax `highlighter` module
+#启用语法高亮功能
 highlighter = ["iced_highlighter", "iced_widget/highlighter"]
-# Enables experimental multi-window support.
+#启用实验性的多窗口
 multi-window = ["iced_winit/multi-window"]
-# Enables the advanced module
+#启用高级模块
 advanced = ["iced_core/advanced", "iced_widget/advanced"]
-# Enables embedding Fira Sans as the default font on Wasm builds
+#在 WebAssembly 构建中将 Fira Sans 字体嵌入为默认字体。
 fira-sans = ["iced_renderer/fira-sans"]
-# Enables auto-detecting light/dark mode for the built-in theme
+#启用自动检测暗/亮模式的主题功能。
 auto-detect-theme = ["iced_core/auto-detect-theme"]
 
+#该区域用于指定依赖, xx.workspace=true的配置表示, 这些依赖是工作区的一部分, 共享依赖项, 便于统一管理
+#指定依赖时可以指定启用特性
 [dependencies]
 iced_core.workspace = true
 iced_futures.workspace = true
 iced_renderer.workspace = true
 iced_widget.workspace = true
+#启用iced_winit的program特性
 iced_winit.features = ["program"]
 iced_winit.workspace = true
 
 iced_highlighter.workspace = true
+#optional表示这个依赖是可选的, 只有在需要语法高亮功能时才启用
 iced_highlighter.optional = true
 
 thiserror.workspace = true
